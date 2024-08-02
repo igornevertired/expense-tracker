@@ -1,10 +1,24 @@
-import logging
-
-import yaml
+from datetime import datetime
+from sqlalchemy import Column, Float, String, DateTime, Integer
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, URL
 from sqlalchemy_utils import database_exists, create_database
-from sqlalchemy.orm import sessionmaker
-from src.models import Base, Transaction
+import logging
+import yaml
+
+Base = declarative_base()
+
+
+class Transaction(Base):
+    __tablename__ = 'transactions'
+
+    id = Column(Integer, primary_key=True)
+    amount = Column(Float, nullable=False)
+    category = Column(String, nullable=False)
+    date = Column(DateTime, default=datetime.now)
+    description = Column(String)
+
 
 logger = logging.getLogger("DbManager")
 CONFIG_PATH = "src/configs/db_config.yaml"
@@ -49,5 +63,40 @@ def get_transactions():
     try:
         transactions = session.query(Transaction).all()
         return transactions
+    finally:
+        session.close()
+
+
+def edit_transaction(transaction_id, amount=None, category=None, date=None, description=None):
+    session = Session()
+    try:
+        transaction = session.query(Transaction).filter_by(id=transaction_id).first()
+        if transaction:
+            if amount is not None:
+                transaction.amount = amount
+            if category is not None:
+                transaction.category = category
+            if date is not None:
+                transaction.date = date
+            if description is not None:
+                transaction.description = description
+            session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
+    finally:
+        session.close()
+
+
+def delete_transaction(transaction_id):
+    session = Session()
+    try:
+        transaction = session.query(Transaction).filter_by(id=transaction_id).first()
+        if transaction:
+            session.delete(transaction)
+            session.commit()
+    except Exception as e:
+        session.rollback()
+        raise e
     finally:
         session.close()
