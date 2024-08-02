@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "expense-tracker"
+version = "1.0.0"
+description = ""
+authors = ["igornevertired <igorgorelkov0@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyqt6 = "^6.7.1"
+matplotlib = "^3.9.1"
+sqlalchemy = "^2.0.31"
+pyyaml = "^6.0.1"
+psycopg2 = "^2.9.9"
+asyncqt = "^0.8.0"
+sqlalchemy-utils = "^0.41.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
